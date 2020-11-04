@@ -2,15 +2,45 @@
 package main
 
 import (
+	"bufio"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/gorilla/mux"
 )
 
+type Logs struct {
+	// lines []string `json:"lines"`
+	line string `json: "line"`
+}
+
+func LogsHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+
+	var in io.Reader = os.Stdin
+	var err error
+	var lines = make([]string, 0, 10)
+	reader := bufio.NewReaderSize(in, 4096)
+	for line := ""; err == nil; line, err = reader.ReadString('\n') {
+		// fmt.Print(line)
+		lines = append(lines, line)
+	}
+	// mapD := map[string]int{"apple": 5, "lettuce": 7}
+	// var logs = Logs{lines: lines}
+	fmt.Print(lines[0])
+	// var logs = Logs{line: lines[0]}
+	mapB, _ := json.Marshal(lines)
+	w.Write([]byte(mapB))
+}
+
 func main() {
 	r := mux.NewRouter()
+	r.HandleFunc("/logs", LogsHandler)
 	r.PathPrefix("/").Handler(http.FileServer(rice.MustFindBox("http-files").HTTPBox()))
 	// http.Handle("/", http.FileServer(rice.MustFindBox("http-files").HTTPBox()))
 	address := "0.0.0.0:8000"
