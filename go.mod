@@ -1,4 +1,4 @@
-module hello
+module otl
 
 go 1.15
 
