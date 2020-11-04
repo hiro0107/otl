@@ -14,8 +14,7 @@ import (
 )
 
 type Logs struct {
-	// lines []string `json:"lines"`
-	line string `json: "line"`
+	Lines []string `json:"lines"`
 }
 
 func LogsHandler(w http.ResponseWriter, r *http.Request) {
@@ -30,11 +29,9 @@ func LogsHandler(w http.ResponseWriter, r *http.Request) {
 		// fmt.Print(line)
 		lines = append(lines, line)
 	}
-	// mapD := map[string]int{"apple": 5, "lettuce": 7}
-	// var logs = Logs{lines: lines}
+	var logs = Logs{lines}
 	fmt.Print(lines[0])
-	// var logs = Logs{line: lines[0]}
-	mapB, _ := json.Marshal(lines)
+	mapB, _ := json.Marshal(logs)
 	w.Write([]byte(mapB))
 }
 
